@@ -26,6 +26,7 @@
     "mongoose": "^8.15.1",
     "multer": "^2.0.0",
     "nodemon": "^3.1.10",
+    "pdf-parse": "^1.1.1",
     "winston": "^3.17.0",
     "winston-cloudwatch": "^6.3.0"
   }
