@@ -1,12 +1,17 @@
 const express = require("express");
 const logger = require("../utils/logger"); // path depends on where you place it
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+} = require("@aws-sdk/client-s3");
 const ExcelJS = require("exceljs");
 const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const User = require("../db/User.model"); // update path as needed
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const router = express.Router();
 const s3 = new S3Client({ region: process.env.AWS_REGION });
@@ -82,6 +87,40 @@ router.get("/export", async (req, res) => {
   } catch (error) {
     logger.error("Export failed", { error: error.message });
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Generate pre-signed URL (upload or download)
+router.get("/presigned-url", async (req, res) => {
+  const { type, key } = req.query;
+
+  if (!type || !["put", "get"].includes(type) || !key) {
+    logger.warn("Invalid request for pre-signed URL", { query: req.query });
+    return res
+      .status(400)
+      .json({ error: "Missing or invalid 'type' or 'key'" });
+  }
+
+  try {
+    const command =
+      type === "put"
+        ? new PutObjectCommand({
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: key,
+            ContentType: "application/octet-stream",
+          })
+        : new GetObjectCommand({
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: key,
+          });
+
+    const url = await getSignedUrl(s3, command, { expiresIn: 180 }); // 3 minutes
+
+    logger.info(`Generated ${type.toUpperCase()} pre-signed URL`, { key, url });
+    res.json({ url });
+  } catch (error) {
+    logger.error("Failed to generate pre-signed URL", { error: error.message });
+    res.status(500).json({ error: "Could not generate pre-signed URL" });
   }
 });
 
