@@ -1,0 +1,32 @@
+{
+  "name": "upload-s3-and-cloud-watch-logs",
+  "version": "1.0.0",
+  "description": "upload the file in s3 and watch the logs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ishwar608/upload-s3-and-cloud-watch-logs.git"
+  },
+  "author": "ishwar suthar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ishwar608/upload-s3-and-cloud-watch-logs/issues"
+  },
+  "homepage": "https://github.com/Ishwar608/upload-s3-and-cloud-watch-logs#readme",
+  "dependencies": {
+    "@aws-sdk/client-cloudwatch-logs": "^3.817.0",
+    "@aws-sdk/client-s3": "^3.817.0",
+    "dotenv": "^16.5.0",
+    "exceljs": "^4.4.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.15.1",
+    "multer": "^2.0.0",
+    "nodemon": "^3.1.10",
+    "winston": "^3.17.0",
+    "winston-cloudwatch": "^6.3.0"
+  }
+}
